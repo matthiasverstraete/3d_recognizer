@@ -1,0 +1,14 @@
+pillow==9.2.0
+numpy==1.23.1
+opencv-python==4.6.0.66
+torch==1.12.0
+vispy==0.11.0
+pyopengltk==0.0.4
+pyrealsense2==2.50.0.3812
+setuptools==61.2.0
+matplotlib==3.5.2
+scipy==1.8.1
+scikit-learn==1.1.1
+faiss-cpu==1.7.2
+tensorboard==2.9.1
+tqdm==4.64.0
