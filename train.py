@@ -2,11 +2,11 @@ from datetime import datetime
 from multiprocessing import Queue, Process, set_start_method
 from pathlib import Path
 from queue import Empty
-from typing import Optional
+from typing import Optional, List
 
 import tensorboard
 
-from dataset import Dataset
+from dataset import Dataset, DatasetMerged
 from randlanet import Model, RandLANetSettings, TrainingSettings, \
     AugmentationSettings
 
@@ -42,16 +42,18 @@ class ProgressTracker:
         return last_progress
 
 
-def train(dataset_name: Path, tracker: Optional[ProgressTracker] = None):
-    dataset = Dataset(dataset_name)
-    train_dataset, validation_dataset = dataset.split()
+def train(dataset_names: List[Path], tracker: Optional[ProgressTracker] = None):
+    datasets = [Dataset(dataset_name, broaden_annotations=True) for dataset_name in dataset_names]
+    dataset_merged = DatasetMerged(datasets)
+    train_dataset, validation_dataset = dataset_merged.split()
 
-    settings = RandLANetSettings(n_classes=2, n_features=0, knn="naive")
+    settings = RandLANetSettings(n_classes=2, n_features=0, knn="naive",
+                                 n_points=2500, n_neighbors=32, decimation=4)
     model = Model(settings, use_gpu=True)
 
     training_settings = TrainingSettings(
         epochs=50,
-        batch_size=2,
+        batch_size=4,
         learning_rate=1e-2,
         early_stopping=False,
     )
@@ -103,10 +105,10 @@ def train(dataset_name: Path, tracker: Optional[ProgressTracker] = None):
     print(f"\nModel saved to {model_path}")
 
 
-def train_async(dataset_name: Path) -> ProgressTracker:
+def train_async(dataset_names: List[Path]) -> ProgressTracker:
     set_start_method('spawn')
     tracker = ProgressTracker(Queue())
-    p = Process(target=train, args=(dataset_name, tracker))
+    p = Process(target=train, args=(dataset_names, tracker))
     p.start()
     tracker.calling_process = p
 
@@ -114,11 +116,15 @@ def train_async(dataset_name: Path) -> ProgressTracker:
 
 
 if __name__ == '__main__':
-    from time import sleep
-    tracker = train_async(Path("data/matthias_office"))
+    from time import sleep, time
+    start = time()
+    tracker = train_async([
+        Path("data/matthias_home2"),
+    ])
     while True:
         progress = tracker.check_progress()
         print(progress)
         if progress == 100:
             break
         sleep(1)
+    print(f"training took {(time()-start)/60} seconds")

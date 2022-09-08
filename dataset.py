@@ -1,16 +1,17 @@
 from datetime import datetime
 from pathlib import Path
-from typing import Sequence, Tuple, overload, Union, Optional, List
+from typing import Sequence, Tuple, Union, Optional, List
 
 import numpy as np
 
 
-def annotation_to_cloud(point_cloud: np.ndarray,
-                        annotation: np.ndarray,
-                        radius: float = 0.005) -> np.ndarray:
+def broaden_annotation(point_cloud: np.ndarray,
+                       annotation: np.ndarray,
+                       radius: float = 0.01) -> np.ndarray:
     output = []
+    annotation_cloud = point_cloud[annotation.astype(np.bool)]
 
-    for annotation_point in annotation:
+    for annotation_point in annotation_cloud:
         ds = np.abs(np.linalg.norm(annotation_point - point_cloud, axis=1))
         output.append(ds < radius)
 
@@ -20,10 +21,12 @@ def annotation_to_cloud(point_cloud: np.ndarray,
 class Dataset(Sequence):
 
     def __init__(self, root_path: Path, only_annotated: bool = True,
-                 selection: Optional[List[int]] = None):
+                 selection: Optional[List[int]] = None,
+                 broaden_annotations: bool = False):
         self._root_path = root_path
         self._only_annotated = only_annotated
         self._selection = selection
+        self._broaden_annotations = broaden_annotations
 
     def __len__(self):
         if self._selection is not None:
@@ -65,9 +68,9 @@ class Dataset(Sequence):
         point_cloud = np.load(str(item_path))
         annotation_path = self._root_path / (index + "_annotation.npy")
         if annotation_path.exists():
-            annotation = np.load(str(annotation_path))
-
-            annotation_cloud = annotation_to_cloud(point_cloud, annotation)
+            annotation_cloud = np.load(str(annotation_path))
+            if self._broaden_annotations:
+                annotation_cloud = broaden_annotation(point_cloud, annotation_cloud)
         else:
             if self._only_annotated:
                 raise Exception("No annotation")
@@ -113,6 +116,8 @@ class Dataset(Sequence):
 
     def split(self, percentage: float = 0.8) -> "Tuple[Dataset, Dataset]":
         indices = list(range(len(self)))
+        np.random.seed(3)
+        np.random.shuffle(indices)
         split_index = int(percentage*len(indices))
         return Dataset(
             self._root_path, self._only_annotated, selection=indices[: split_index]
@@ -120,3 +125,36 @@ class Dataset(Sequence):
             self._root_path, self._only_annotated, selection=indices[split_index:]
         )
 
+
+class DatasetMerged(Sequence):
+
+    def __init__(self, datasets: List[Dataset],
+                 selection: Optional[List[int]] = None):
+        self._datasets = datasets
+        self._selection = selection
+
+    def __len__(self):
+        if self._selection is not None:
+            return len(self._selection)
+        return sum(map(lambda s: len(s), self._datasets))
+
+    def __getitem__(self, item: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+        if self._selection is not None:
+            item = self._selection[item]
+
+        for dataset in self._datasets:
+            if item >= len(dataset):
+                item -= len(dataset)
+            else:
+                return dataset[item]
+
+    def split(self, percentage: float = 0.8) -> "Tuple[DatasetMerged, DatasetMerged]":
+        indices = list(range(len(self)))
+        np.random.seed(3)
+        np.random.shuffle(indices)
+        split_index = int(percentage * len(indices))
+        return DatasetMerged(
+            self._datasets, selection=indices[: split_index]
+        ), DatasetMerged(
+            self._datasets, selection=indices[split_index:]
+        )

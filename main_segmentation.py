@@ -42,7 +42,7 @@ class VispyView:
         self._annotation = vispy.scene.Markers(
             parent=self._root_node, scaling=True
         )
-        self._annotation.set_gl_state("translucent")
+        self._annotation.set_gl_state("additive")
         self._annotation_data: Optional[np.ndarray] = None
 
         self.view.camera = ArcballCamera()
@@ -84,7 +84,7 @@ class VispyView:
             self._annotation.visible = False
         else:
             self._annotation.set_data(
-                value, edge_width=0.0,
+                self._point_cloud_data[value], edge_width=0.0,
                 edge_color=None, face_color="blue", size=0.01
             )
             self._annotation.visible = True
@@ -104,12 +104,29 @@ class VispyView:
         assert (abs(p0[3] - 1.0) < 1e-5)
         p0, p1 = p0[:3], p1[:3]
 
+        # check if this intersects with existing annotation
+        if self.annotation is not None:
+            annotation_cloud = self._point_cloud_data[self.annotation]
+            if len(annotation_cloud) > 0:
+                lookup = np.where(self.annotation == True)[0]
+                d = np.linalg.norm(np.cross(p1 - p0, p0 - annotation_cloud), axis=1)
+                min_idx = np.argmin(d)
+                if d[min_idx] < 0.01:
+                    a = self._annotation_data
+                    a[lookup[min_idx]] = False
+                    self.annotation = a
+                    self._store_callback()
+                    return
+
+        # if not, add a new point
         d = np.linalg.norm(np.cross(p1 - p0, p0 - self._point_cloud_data), axis=1)
-        max_idx = np.argmin(d)
+        min_idx = np.argmin(d)
         if self.annotation is None:
-            self.annotation = np.array([self._point_cloud_data[max_idx]])
+            new_annotation = np.zeros(len(self._point_cloud_data), dtype=bool)
         else:
-            self.annotation = np.vstack([self._annotation_data, self._point_cloud_data[max_idx]])
+            new_annotation = self.annotation
+        new_annotation[min_idx] = True
+        self.annotation = new_annotation
         self._store_callback()
 
 
@@ -205,7 +222,7 @@ class DataCapturingFrame(tk.Frame):
 
     def update_model_name(self) -> None:
         model_path = Path("models")
-        latest_model = sorted(model_path.iterdir())[0]
+        latest_model = sorted(model_path.iterdir())[-1]
         self._model_name["text"] = latest_model.name
 
     def start_training(self) -> None:
@@ -319,7 +336,7 @@ class Main:
                 self.canvas.prediction_view.annotation = prediction
                 self._last_prediction = time()
         except Exception as e:
-            if str(e) != "No frame received.":
+            if str(e) != "No valid frame received.":
                 print(e)
                 import traceback
                 traceback.print_tb(e.__traceback__)

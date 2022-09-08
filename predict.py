@@ -16,8 +16,7 @@ class Predictor:
 
     def predict(self, point_cloud: np.ndarray) -> np.ndarray:
         prediction_mask = self._model.predict(point_cloud).astype(bool)
-
-        return point_cloud[prediction_mask]
+        return prediction_mask
 
 
 if __name__ == '__main__':
