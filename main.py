@@ -24,6 +24,9 @@ classes = ("thumbs up", "thumbs down")
 vispy.use("tkinter")
 
 
+MODELS_PATH = Path("models")
+MODELS_PATH.mkdir(parents=True, exist_ok=True)
+
 # TODO: add option to run with mock camera
 # TODO: split of all UI components in separate folder
 
@@ -224,8 +227,7 @@ class DataCapturingFrame(tk.Frame):
         return True
 
     def update_model_name(self) -> None:
-        model_path = Path("models")
-        latest_model = sorted(model_path.iterdir())[-1]
+        latest_model = sorted(MODELS_PATH.iterdir())[-1]
         self._model_name["text"] = latest_model.name
 
     def start_training(self) -> None:
@@ -372,13 +374,13 @@ class Main:
 
     def train(self) -> None:
         dataset_name = self.data_capturing_frame.dataset_name.get()
-        progress_tracker = train_async(Path("data") / dataset_name)
+        progress_tracker = train_async([Path("data") / dataset_name])
         self.data_capturing_frame.progress_tracker = progress_tracker
 
     def toggle_prediction(self, enable: bool) -> None:
         if enable:
             current_model_name = self.data_capturing_frame._model_name["text"]
-            self._predictor = Predictor(Path("models") / current_model_name)
+            self._predictor = Predictor(MODELS_PATH / current_model_name)
         else:
             self._predictor = None
 

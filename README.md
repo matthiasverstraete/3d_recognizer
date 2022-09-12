@@ -11,7 +11,18 @@ In order to run the tool, the dockerfile (which is included in the repository) s
 This will generate docker image called `3d_gestures`.
 
 By running the `bin/run_in_docker` script, an interactive shell will be opened in a docker container.
-All dependencies are now ready to go.
+As long as this shell is open, the container will keep running. Once the shell is closed, the container is shut down and removed.
+## Running locally
+In case you are connected to your device directly (screen is attached to the device), you can run your commands in the container shell.
+The UI will automatically be forwarded outside the docker container.
+
+## Running remotely
+In case you are connect to your device remotely (via ssh), you can connect to the docker container directly in order
+to properly forward the UI. This can be done with the command:
+```shell
+ssh -XC -P 2299 root@<device_ip>
+```
+The password is set to `abc`. Please note this is not a secure configuration and should not be exposed publicly.
 
 ## Usage
 _This section assumes a docker container is running and that all commands below are executed inside this docker container shell._
