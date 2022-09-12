@@ -11,7 +11,7 @@ RUN apt update && apt install -y \
   libssl-dev=1.1.1n-0+deb11u3 \
   libx11-dev=2:1.7.2-1 \
   xorg-dev=1:7.7+22 \
-  libglu1-mesa-dev==9.0.1-1 \
+  libglu1-mesa-dev=9.0.1-1 \
   libusb-1.0-0-dev=2:1.0.24-3 \
   tk=8.6.11+1 && \
   apt clean
