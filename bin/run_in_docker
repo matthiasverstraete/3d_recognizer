@@ -1,3 +1,8 @@
 #! /bin/bash
 
-docker run --mount type=bind,source=$PWD,destination=/3d_gestures --rm -it --network=host 3d_gestures
+xhost +local:root > /dev/null
+docker run --mount type=bind,source=$PWD,destination=/3d_gestures \
+    --security-opt apparmor=unconfined \
+    -e DISPLAY=$DISPLAY -e QT_X11_NO_MITSHM=1 -v /tmp/.X11-unix:/tmp/.X11-unix \
+    --rm -it --network=host 3d_gestures
+xhost -local:root > /dev/null
