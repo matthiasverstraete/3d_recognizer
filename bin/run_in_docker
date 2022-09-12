@@ -1,7 +1,3 @@
 #! /bin/bash
 
-set -e
-
-docker build -t 3d_gestures .
-
 docker run --mount type=bind,source=$PWD,destination=/3d_gestures --rm -it --network=host 3d_gestures

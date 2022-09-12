@@ -116,6 +116,8 @@ def train_async(dataset_names: List[Path]) -> ProgressTracker:
 
 
 if __name__ == '__main__':
+    # TODO: include help
+    # TODO: remove all references to local folders or my name
     from time import sleep, time
     start = time()
     tracker = train_async([

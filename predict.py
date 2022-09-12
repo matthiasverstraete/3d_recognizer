@@ -20,6 +20,8 @@ class Predictor:
 
 
 if __name__ == '__main__':
+    # TODO: include help
     predictor = Predictor(Path("models/2022_07_26__10_13_30_365682000"))
     prediction = predictor.predict(np.zeros((13, 3), dtype=np.uint8))
     print(prediction)
+    # TODO: visualize predictions nicely

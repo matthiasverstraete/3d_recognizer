@@ -24,6 +24,9 @@ classes = ("thumbs up", "thumbs down")
 vispy.use("tkinter")
 
 
+# TODO: add option to run with mock camera
+# TODO: split of all UI components in separate folder
+
 class VispyView:
 
     def __init__(self, view, store_callback,  allow_annotation: bool = False):
