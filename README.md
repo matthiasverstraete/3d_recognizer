@@ -6,6 +6,8 @@ This repository contains a tool to train/test models on 3d point cloud segmentat
 In order to run the tool, the following pre-requisites are required:
 * docker (The tool was tested on `Docker version 20.10.17`)
 * An Intel Realsense L515 camera (if data capturing is required)
+* nvidia drivers should be installed
+* nvidia-docker2 should be installed
 
 In order to run the tool, the dockerfile (which is included in the repository) should be build. This can be done by running the `bin/docker_build` script.
 This will generate docker image called `3d_gestures`.
