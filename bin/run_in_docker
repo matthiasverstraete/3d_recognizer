@@ -1,7 +1,7 @@
 #! /bin/bash
 
 xhost +local:root > /dev/null
-docker run --mount type=bind,source=$PWD,destination=/3d_gestures \
+docker run --gpus=1 --runtime=nvidia --mount type=bind,source=$PWD,destination=/3d_gestures \
     --security-opt apparmor=unconfined \
     --workdir=/3d_gestures \
     -e DISPLAY=$DISPLAY -e QT_X11_NO_MITSHM=1 -v /tmp/.X11-unix:/tmp/.X11-unix \

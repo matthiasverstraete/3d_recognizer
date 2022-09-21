@@ -6,17 +6,15 @@ from time import time
 from tkinter import ttk
 from typing import Callable, Optional
 
-import cv2
-from PIL import Image, ImageTk
 import numpy as np
 import vispy
 import vispy.scene
 from vispy.scene import ArcballCamera
 from vispy.util.quaternion import Quaternion
 
+from camera import auto_connect_camera, Camera
 from dataset import Dataset
 from predict import Predictor
-from realsense_camera import RealsenseCamera
 from train import train_async, ProgressTracker
 
 classes = ("thumbs up", "thumbs down")
@@ -312,7 +310,7 @@ class Main:
 
         main_frame.pack(fill=tk.BOTH, expand=True)
 
-        self.camera = RealsenseCamera.auto_connect()
+        self.camera = auto_connect_camera()
         self.camera.start()
 
         self.data_capturing_frame.update_count()

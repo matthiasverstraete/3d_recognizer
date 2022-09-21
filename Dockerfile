@@ -1,19 +1,33 @@
-FROM python:3.9-slim
+FROM nvidia/cuda:11.3.0-cudnn8-runtime-ubuntu20.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Europe/Belgium
+
+#sed -i 's/^\(deb .*\)$/\1 non-free/' /etc/apt/sources.list
+#apt install curl
+#curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | apt-key add -
+#distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+#curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | \
+#  tee /etc/apt/sources.list.d/nvidia-docker.list
+#apt install nvidia-
 
 RUN apt update && apt install -y \
-  openssh-server=1:8.4p1-5+deb11u1 \
-  unzip=6.0-26+deb11u1 \
-  wget=1.21-1+deb11u1 \
-  python3-dev=3.9.2-3 \
-  cmake=3.18.4-2+deb11u1 \
-  build-essential=12.9 \
-  git=1:2.30.2-1 \
-  libssl-dev=1.1.1n-0+deb11u3 \
-  libx11-dev=2:1.7.2-1 \
-  xorg-dev=1:7.7+22 \
-  libglu1-mesa-dev=9.0.1-1 \
-  libusb-1.0-0-dev=2:1.0.24-3 \
-  tk=8.6.11+1 && \
+  openssh-server=1:8.2p1-4ubuntu0.5 \
+  unzip=6.0-25ubuntu1 \
+  wget=1.20.3-1ubuntu2 \
+  python3=3.8.2-0ubuntu2 \
+  python3-dev=3.8.2-0ubuntu2 \
+  python3.8-tk=3.8.10-0ubuntu1~20.04 \
+  python3-pip=20.0.2-5ubuntu1.6 \
+  cmake=3.16.3-1ubuntu1 \
+  build-essential=12.8ubuntu1.1 \
+  git=1:2.25.1-1ubuntu3.5 \
+  libssl-dev=1.1.1f-1ubuntu2.16 \
+  libx11-dev=2:1.6.9-2ubuntu1.2 \
+  xorg-dev=1:7.7+19ubuntu14 \
+  libglu1-mesa-dev=9.0.1-1build1 \
+  libusb-1.0-0-dev=2:1.0.23-2build1 \
+  tk=8.6.9+1 && \
   apt clean
 
 

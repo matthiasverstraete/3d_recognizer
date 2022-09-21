@@ -1,15 +1,16 @@
-from typing import Optional, List
-
 import numpy as np
-import pyrealsense2 as rs
+from pyrealsense2 import pyrealsense2 as rs
+
+from camera.base_camera import Camera
 
 
-class RealsenseCamera:
+class RealsenseCamera(Camera):
     def __init__(
             self,
+            name: str,
             device_serial: str,
     ):
-        self._running = False
+        super().__init__(name)
         self._realsense_config = rs.config()
         self._last_cloud = np.array([])
 
@@ -39,16 +40,6 @@ class RealsenseCamera:
 
         if device_product_line != "L500":
             raise Exception("Expected an L515 camera")
-
-    @classmethod
-    def auto_connect(cls) -> "RealsenseCamera":
-        context = rs.context()
-
-        for device in context.query_devices():
-            if device.get_info(rs.camera_info.name) == "Intel RealSense L515":
-                return RealsenseCamera(device.get_info(rs.camera_info.serial_number))
-
-        raise Exception("No L515 camera detected.")
 
     @property
     def serial(self) -> str:
@@ -84,7 +75,7 @@ class RealsenseCamera:
         self._configure_device()
 
         self._pipeline.start(self._realsense_config)
-        self._running = True
+        super().start()
 
     def stop(self) -> None:
         """
@@ -95,7 +86,7 @@ class RealsenseCamera:
             return
 
         self._pipeline.stop()
-        self._running = False
+        super().stop()
 
     @property
     def last_cloud(self) -> np.ndarray:
@@ -105,10 +96,9 @@ class RealsenseCamera:
             self, timeout_ms: int = 200
     ) -> np.ndarray:
         """
-        Get the latest frame from the device. If no frame can be fetched within
-        timeout_ms, it will raise an error.
-        :return: The latest frame or only the image (depending on the
-        configuration).
+        Get the latest point cloud from the device. If no point cloud can be
+        fetched within timeout_ms, it will raise an error.
+        :return: The point cloud
         """
         if not self._running:
             raise Exception(
