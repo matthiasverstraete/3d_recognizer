@@ -17,7 +17,7 @@ RUN apt update && apt install -y \
   wget=1.20.3-1ubuntu2 \
   python3=3.8.2-0ubuntu2 \
   python3-dev=3.8.2-0ubuntu2 \
-  python3.8-tk=3.8.10-0ubuntu1~20.04 \
+  python3-tk=3.8.10-0ubuntu1~20.04 \
   python3-pip=20.0.2-5ubuntu1.6 \
   cmake=3.16.3-1ubuntu1 \
   build-essential=12.8ubuntu1.1 \
