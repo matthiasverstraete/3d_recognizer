@@ -9,6 +9,7 @@ RUN apt update && apt install -y \
   wget \
   python3.8 \
   python3-dev \
+  python3-tk \
   python3-pip \
   cmake \
   build-essential \

@@ -227,8 +227,10 @@ class DataCapturingFrame(tk.Frame):
         return True
 
     def update_model_name(self) -> None:
-        latest_model = sorted(MODELS_PATH.iterdir())[-1]
-        self._model_name["text"] = latest_model.name
+        all_models = sorted(MODELS_PATH.iterdir())
+        if len(all_models) > 0:
+            latest_model = all_models[-1]
+            self._model_name["text"] = latest_model.name
 
     def start_training(self) -> None:
         self._train_button["state"] = "disabled"
@@ -383,6 +385,10 @@ class Main:
     def toggle_prediction(self, enable: bool) -> None:
         if enable:
             current_model_name = self.data_capturing_frame._model_name["text"]
+            if current_model_name == "":
+                print("No model loaded yet. First train a model.")
+                self._prediction_frame.toggle_predict()
+                return
             conf_threshold = self._prediction_frame.confidence_slider.get()
             self._predictor = Predictor(MODELS_PATH / current_model_name,
                                         conf_threshold)
