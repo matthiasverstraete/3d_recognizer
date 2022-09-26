@@ -22,11 +22,14 @@ RUN apt update && apt install -y \
   apt clean
 
 
+
 RUN sed -i 's/#Port 22/Port 2299/' /etc/ssh/sshd_config \
     && sed -i 's/#PermitEmptyPasswords no/PermitEmptyPasswords yes/' /etc/ssh/sshd_config \
     && sed -i 's/#PermitRootLogin.*$/PermitRootLogin yes/' /etc/ssh/sshd_config \
-    && sed -i 'a\AllowUsers root' /etc/ssh/sshd_config \
-    && echo 'root:abc' | chpasswd
+    && sed -i 's/#X11UseLocalhost.*$/X11UseLocalhost no/' /etc/ssh/sshd_config \
+    && sed -i 's/#AddressFamily.*$/AddressFamily inet/' /etc/ssh/sshd_config \
+    && echo 'AllowUsers root' >> /etc/ssh/sshd_config \
+    && passwd -d root
 
 COPY requirements.txt ./
 
@@ -38,4 +41,4 @@ RUN wget https://github.com/IntelRealSense/librealsense/archive/refs/tags/v2.50.
 RUN sed -i "s/pyrealsense/# pyrealsense/" requirements.txt && \
   pip3 install --no-cache --upgrade -r requirements.txt
 
-CMD service ssh start && sh
+CMD service ssh start && bash
