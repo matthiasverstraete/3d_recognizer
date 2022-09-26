@@ -3,16 +3,8 @@ FROM nvidia/cuda:11.3.0-cudnn8-runtime-ubuntu20.04
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Belgium
 
-#sed -i 's/^\(deb .*\)$/\1 non-free/' /etc/apt/sources.list
-#apt install curl
-#curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | apt-key add -
-#distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
-#curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | \
-#  tee /etc/apt/sources.list.d/nvidia-docker.list
-#apt install nvidia-
-
 RUN apt update && apt install -y \
-  openssh-server=7.6p1-4ubuntu0.7 \
+  openssh-server=1:7.6p1-4ubuntu0.7 \
   unzip=6.0-21ubuntu1.1 \
   wget=1.19.4-1ubuntu2.2 \
   python3.8=3.8.0-3ubuntu1~18.04.2 \

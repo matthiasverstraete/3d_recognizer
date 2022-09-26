@@ -14,6 +14,9 @@ This will generate docker image called `3d_gestures`.
 
 By running the `bin/run_in_docker` script, an interactive shell will be opened in a docker container.
 As long as this shell is open, the container will keep running. Once the shell is closed, the container is shut down and removed.
+
+The docker container automatically starts an ssh server. This server will be exposed on port `2299`. If this port is
+already in use on your system, replace the `SSH_PORT=2299` in `bin/run_in_docker` by a port number which is still available.
 ## Running locally
 In case you are connected to your device directly (screen is attached to the device), you can run your commands in the container shell.
 The UI will automatically be forwarded outside the docker container.
