@@ -12,7 +12,6 @@ class RealsenseCamera(Camera):
     ):
         super().__init__(name)
         self._realsense_config = rs.config()
-        self._last_cloud = np.array([])
 
         self._context = rs.context()
         self._pipeline = rs.pipeline(self._context)
@@ -87,10 +86,6 @@ class RealsenseCamera(Camera):
 
         self._pipeline.stop()
         super().stop()
-
-    @property
-    def last_cloud(self) -> np.ndarray:
-        return self._last_cloud
 
     def get(
             self, timeout_ms: int = 200

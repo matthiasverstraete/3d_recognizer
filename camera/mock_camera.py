@@ -34,4 +34,6 @@ class MockRealsenseCamera(Camera):
         self._frame_data_index += 1
         self._frame_data_index %= total
 
+        self._last_cloud = next_frame[0]
+
         return next_frame[0]

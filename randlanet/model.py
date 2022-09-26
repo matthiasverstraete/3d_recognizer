@@ -130,9 +130,8 @@ class Model:
         :param logits: Logits, i.e. network output before soft-max (B, C, N1).
         :param xyz: Point coordinates (B, N1, 3).
         :param xyz_upsampled: Point coordinates of upsampled point cloud (B, N2, 3).
-        :return: Upsampled predictions (B, N2)
+        :return: Upsampled predictions (B, C, N2)
         """
-
         # confidences as softmax of logits
         confidences = torch.softmax(logits, dim=-2).unsqueeze(3)
         # upsample confidences
@@ -140,8 +139,9 @@ class Model:
             confidences, xyz, xyz_upsampled
         ).squeeze(-1)
         # take max to define classes
-        predictions = torch.max(confidences_upsampled, dim=-2).indices
-        return predictions
+        return confidences_upsampled
+        # predictions = torch.max(confidences_upsampled, dim=-2).indices
+        # return predictions
 
     def predict(
         self,
@@ -154,7 +154,7 @@ class Model:
         :param features: Optional point features (B, F, 3) or (F, 3).
         :param prepostprocess: Include preprocessing (downsampling) and
                                postprocessing (upsampling) of point cloud.
-        :return: Predicted point classes (B, N) or (N,).
+        :return: Predicted point classes (B, C, N) or (C, N,).
         """
 
         # warning if better knn approach could be used
@@ -226,8 +226,10 @@ class Model:
             else:
                 # predict logits
                 logits = self._model(input_t.to(self._model.device))
+                confidences = torch.softmax(logits, dim=-2)
                 # take max to define classes
-                predictions = torch.max(logits, dim=-2).indices.cpu().numpy()
+                predictions = confidences
+                # predictions = torch.max(logits, dim=-2).indices.cpu().numpy()
         if not batched:
             predictions = predictions[0]
         return predictions

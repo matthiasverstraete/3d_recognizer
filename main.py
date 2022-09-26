@@ -17,8 +17,6 @@ from dataset import Dataset
 from predict import Predictor
 from train import train_async, ProgressTracker
 
-classes = ("thumbs up", "thumbs down")
-
 vispy.use("tkinter")
 
 
@@ -95,7 +93,10 @@ class VispyView:
         self._annotation_data = value
 
     def viewbox_mouse_event(self, event):
-        if event.button != 1:  # check for modifier keys
+        if event.button != 3:  # check for modifier keys
+            return
+        if len(self._point_cloud_data) == 0:
+            print("No data captured yet.")
             return
 
         tform = self.view.scene.transform
@@ -107,6 +108,7 @@ class VispyView:
             p1[3] - 1.0) < 1e-5)  # normalization necessary before subtraction
         assert (abs(p0[3] - 1.0) < 1e-5)
         p0, p1 = p0[:3], p1[:3]
+
 
         # check if this intersects with existing annotation
         if self.annotation is not None:
@@ -260,20 +262,21 @@ class DataCapturingFrame(tk.Frame):
 
 class PredictionFrame(tk.Frame):
 
-    def __init__(self, master, toggle_predict):
+    def __init__(self, master, toggle_predict, set_confidence):
         super().__init__(master)
         self._toggle_predict = toggle_predict
 
-        self.class_sliders = {}
-        for class_name in classes:
-            self.class_sliders[class_name] = tk.Scale(self, from_=0, to=1, resolution=0.01)
-            self.class_sliders[class_name].pack(side=tk.LEFT)
+        tk.Label(self, text="Confidence").pack()
+        self.confidence_slider = tk.Scale(self, from_=0, to=1, resolution=0.01,
+                                          command=set_confidence)
+        self.confidence_slider.set(0.5)
+        self.confidence_slider.pack()
 
         self._predict_button = tk.Button(self, anchor="e", text="Predict",
                                          command=self.toggle_predict)
         self._predict_button.pack(side=tk.BOTTOM)
 
-    def toggle_predict(self):
+    def toggle_predict(self) -> None:
         if self._predict_button.config('relief')[-1] == 'sunken':
             self._predict_button.config(relief="raised")
             self._toggle_predict(False)
@@ -302,8 +305,10 @@ class Main:
         )
         self.data_capturing_frame.pack(side=tk.LEFT)
 
-        prediction_frame = PredictionFrame(bottom_frame, self.toggle_prediction)
-        prediction_frame.pack(side=tk.RIGHT)
+        self._prediction_frame = PredictionFrame(
+            bottom_frame, self.toggle_prediction, self.set_confidence
+        )
+        self._prediction_frame.pack(side=tk.RIGHT)
         self._predictor: Optional[Predictor] = None
         self._prediction_interval = 250  # ms
         self._last_prediction = time()
@@ -378,9 +383,15 @@ class Main:
     def toggle_prediction(self, enable: bool) -> None:
         if enable:
             current_model_name = self.data_capturing_frame._model_name["text"]
-            self._predictor = Predictor(MODELS_PATH / current_model_name)
+            conf_threshold = self._prediction_frame.confidence_slider.get()
+            self._predictor = Predictor(MODELS_PATH / current_model_name,
+                                        conf_threshold)
         else:
             self._predictor = None
+
+    def set_confidence(self, value: float) -> None:
+        if self._predictor is not None:
+            self._predictor.confidence_threshold = float(value)
 
 
 if __name__ == '__main__':

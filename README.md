@@ -12,32 +12,64 @@ In order to run the tool, the following pre-requisites are required:
 In order to run the tool, the dockerfile (which is included in the repository) should be build. This can be done by running the `bin/docker_build` script.
 This will generate docker image called `3d_gestures`.
 
-By running the `bin/run_in_docker` script, an interactive shell will be opened in a docker container.
-As long as this shell is open, the container will keep running. Once the shell is closed, the container is shut down and removed.
-
-The docker container automatically starts an ssh server. This server will be exposed on port `2299`. If this port is
+By running the `bin/run_in_docker` script, a docker container will be started in the background.
+This docker container automatically starts an ssh server. This server will be exposed on port `2299`. If this port is
 already in use on your system, replace the `SSH_PORT=2299` in `bin/run_in_docker` by a port number which is still available.
-## Running locally
-In case you are connected to your device directly (screen is attached to the device), you can run your commands in the container shell.
-The UI will automatically be forwarded outside the docker container.
 
-## Running remotely
-In case you are connect to your device remotely (via ssh), you can connect to the docker container directly in order
-to properly forward the UI. This can be done with the command:
+Once the docker container is running on the jetson device, the docker container can be accessed via this command.
 ```shell
-ssh -XC -P 2299 root@<device_ip>
+ssh -XC -p 2299 root@<device_ip>
 ```
-The password is set to `abc`. Please note this is not a secure configuration and should not be exposed publicly.
+Note that this command works for both local and remote access to the jetson.
+
 
 ## Usage
 _This section assumes a docker container is running and that all commands below are executed inside this docker container shell._
 
 In order to start the 3d_recognizer tool, the following command can be run:
 ```shell
-python main.py
+python3 main.py
 ```
+The tool will automatically search a connected Intel Realsense L515 camera. If no camera was found,
+It will pretend a camera was connected and instead show some pre-recorded point clouds. This
+mode is mainly for demonstration purposes.
 
-Include screenshot
+![main UI screenshot](./screenshot.png "main screenshot")
+
+The UI is split up in two sections. The top section shows the output of the camera and allows 3d manipulation.
+The bottom part controls data storage and prediction.
+
+### Top
+The top section of the UI contains 3 3D windows. The left most shows the live feed of the camera that is
+connected. The middle screen shows the last captured sample and allows annotation. The third will
+show the prediction that was made on the live feed of the camera.
+
+Each view can be manipulated by click, dragging and scrolling. This will rotate the 3d view. The 
+perspective of all 3 views is linked which makes it easier to orient everything. Navigation is easiest and works best in the left-most view.
+
+The center view allows labelling. By clicking anywhere on the shown point cloud with the middle mouse button (scroll wheel),
+an annotation point will be added on the point cloud. By clicking again on the blue point (with the middle mouse button) the
+annotation point will be removed again. This allows labeling specific points on the captured data.
+Each annotation point is always immediately stored on disk.
+
+### Bottom
+The bottom section of the UI allows control over data capturing and predictions.
+
+#### Capturing
+In order to capture data, first a dataset name needs to be filled in. Each time you click the
+'Capture' button, a capture will be added to that dataset (stored in `/data/<dataset_name>`). The
+total number of samples in that dataset is shown below the 'Capture' button.
+After capture was taken, it is shown in the middle 3d view so it can be labelled.
+
+Once a sufficient amount of point clouds were captured and labelled, it is possible to press the
+'Train' button. This will train a new model based on the selected dataset. The progress bar will show
+the progress of this training process. Once a model was successfully trained, the name of that model (time of training)
+will be shown below the progress bar.
+
+Finally, it is also possible to do predictions in this tool. Press the 'Predict' button in order to start
+predictions. As long as the 'Predict' button is toggled on, a new prediction will be made every 250 ms. The
+output is shown in the right-most 3D view. One can dynamically adjust the confidence with the slider above the 'Predict' button.
+Click the 'Predict' button again to stop predictions.
 
 ### Commands
 
