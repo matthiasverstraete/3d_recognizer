@@ -4,21 +4,21 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Belgium
 
 RUN apt update && apt install -y \
-  openssh-server=1:7.6p1-4ubuntu0.7 \
-  unzip=6.0-21ubuntu1.1 \
-  wget=1.19.4-1ubuntu2.2 \
-  python3.8=3.8.0-3ubuntu1~18.04.2 \
-  python3-dev=3.8.0-3ubuntu1~18.04.2 \
-  python3-pip=9.0.1-2.3~ubuntu1.18.04.5 \
-  cmake=3.10.2-1ubuntu2.18.04.2 \
-  build-essential=12.4ubuntu1 \
-  git=1:2.17.1-1ubuntu0.12 \
-  libssl-dev=1.1.1-1ubuntu2.1~18.04.20 \
-  libx11-dev=2:1.6.4-3ubuntu0.4 \
-  xorg-dev=1:7.7+19ubuntu7.1 \
-  libglu1-mesa-dev=9.0.0-2.1build1 \
-  libusb-1.0-0-dev=2:1.0.21-2 \
-  tk=8.6.0+9 && \
+  openssh-server \
+  unzip \
+  wget \
+  python3.8 \
+  python3-dev \
+  python3-pip \
+  cmake \
+  build-essential \
+  git \
+  libssl-dev \
+  libx11-dev \
+  xorg-dev \
+  libglu1-mesa-dev \
+  libusb-1.0-0-dev \
+  tk && \
   apt clean
 
 

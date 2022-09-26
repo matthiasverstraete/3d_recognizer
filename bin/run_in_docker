@@ -11,9 +11,12 @@ if [[ "$container" != "" ]]; then
 fi
 # docker kill "3d_gestures_container"
 
-docker run --gpus=1 --runtime=nvidia --mount type=bind,source=$PWD,destination=/3d_gestures \
+xhost +local:root > /dev/null
+docker run --gpus=1 --runtime=nvidia --mount type=bind,source=$PWD,destination=/root \
     --name "3d_gestures_container" \
-    --workdir=/3d_gestures \
+    -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix \
     -p $SSH_PORT:2299 \
     --rm -d 3d_gestures bash -c "service ssh start; tail -f /dev/null"
+
+xhost -local:root > /dev/null
 
