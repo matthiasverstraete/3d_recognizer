@@ -6,22 +6,13 @@ This repository contains a tool to train/test models on 3d point cloud segmentat
 In order to run the tool, the following pre-requisites are required:
 * docker (The tool was tested on `Docker version 20.10.17`)
 * An Intel Realsense L515 camera (if data capturing is required)
-* nvidia drivers should be installed
-* nvidia-docker2 should be installed
 
 In order to run the tool, the dockerfile (which is included in the repository) should be build. This can be done by running the `bin/docker_build` script.
 This will generate docker image called `3d_gestures`.
 
-By running the `bin/run_in_docker` script, a docker container will be started in the background.
-This docker container automatically starts an ssh server. This server will be exposed on port `2299`. If this port is
-already in use on your system, replace the `SSH_PORT=2299` in `bin/run_in_docker` by a port number which is still available.
-
-Once the docker container is running on the jetson device, the docker container can be accessed via this command.
-```shell
-ssh -XC -p 2299 root@<device_ip>
-```
-Note that this command works for both local and remote access to the jetson.
-
+By running the `bin/run_in_docker` script, a docker container will be started and an interactive shell in this container will be opened.
+All UI options are properly set such that UI's from inside the docker container are visible on the host.
+Once you close the interactive sheel with `exit`, the docker container will be automatically stopped and removed.
 
 ## Usage
 _This section assumes a docker container is running and that all commands below are executed inside this docker container shell._
