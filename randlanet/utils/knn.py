@@ -2,8 +2,6 @@ from typing import Tuple
 
 import faiss
 import torch
-# TODO: remove comments
-# from .utils.knn_tpk import knn as knn_tpk
 
 
 def knn_naive(
@@ -55,27 +53,6 @@ def knn_naive(
         neighbors[:, idx_start:idx_end, :] = ret.indices
         distances_sq[:, idx_start:idx_end, :] = ret.values.clamp(min=0)
     return neighbors, distances_sq
-
-
-# def knn_kdtree(
-#     xyz: torch.Tensor, xyz_query: torch.Tensor, n_neighbors: int
-# ) -> Tuple[torch.Tensor, torch.Tensor]:
-#     """K Nearest Neighbor search based on k-d tree space partitioning.
-#     This is the implementation from torch-points-kernels
-#     Uses the implementation of torch_points_kernels on CPU.
-#     Searches for each point in xyz_query the n_neighbors closest points
-#     in xyz.
-#     :param xyz: Support point coordinates (B, N', 3).
-#     :param xyz_query: Query point coordinates (B, N, 3).
-#     :param n_neighbors: Number of neighbors to search.
-#     :return: Tensor with neighbor indices and tensor with corresponding
-#              distances (B, N, K).
-#     """
-#
-#     neighbors, distances_sq = knn_tpk(
-#         xyz.cpu().contiguous(), xyz_query.cpu().contiguous(), n_neighbors
-#     )
-#     return neighbors, distances_sq
 
 
 def knn_approximate(

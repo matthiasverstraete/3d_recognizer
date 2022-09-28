@@ -4,8 +4,7 @@ from typing import List, Optional, Tuple
 import numpy as np
 import torch
 
-# TODO: remove comments
-from .knn import knn_approximate, knn_naive  # , knn_kdtree
+from .knn import knn_approximate, knn_naive
 
 
 @dataclass
@@ -25,7 +24,6 @@ class RandLANetSettings:
         default_factory=(lambda: [16, 64, 128, 256])
     )
     #: KNN approach to use. Is one of the following choices:
-    #: - kdtree: KNN search using k-d tree space partitioning (on CPU)
     #: - approximate: Approximate KNN search using the FAISS implementation (on CPU)
     #: - naive: KNN search by computing the distances to each point. Based on
     #:          matrix multiplications that can be heavily parallellized on GPU.
