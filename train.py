@@ -134,7 +134,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     project_dir = Path(__file__).absolute().parent
 
-    # TODO: remove all references to local folders or my name
     from time import sleep, time
     start = time()
     datasets = [project_dir / Path(path) for path in args.dataset]

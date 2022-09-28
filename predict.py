@@ -107,7 +107,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     project_dir = Path(__file__).absolute().parent
 
-    # TODO: include help
     predictor = Predictor(project_dir / args.model,
                           confidence_threshold=args.confidence)
     datasets = [
