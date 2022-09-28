@@ -1,9 +1,15 @@
 from pathlib import Path
 
 import numpy as np
+import vispy
+import vispy.scene
+import vispy.app
 
+from dataset import Dataset, DatasetMerged
 from randlanet import Model
+from ui import VispyView, Label
 
+vispy.use("tkinter")
 
 class Predictor:
 
@@ -25,9 +31,93 @@ class Predictor:
         return prediction_mask
 
 
+def visualize(
+        point_cloud: np.ndarray,
+        annotation: np.ndarray,
+        prediction: np.ndarray
+) -> bool:
+    do_break = False
+    canvas = vispy.scene.SceneCanvas(
+        title="visualization 3D",
+        keys="interactive",
+        show=True,
+        fullscreen=False,
+        size=(1000, 600),
+        position=(0, 0),
+    )
+
+    def process_key(event):
+        nonlocal do_break
+        if event.key == vispy.keys.ESCAPE:
+            do_break = True
+            vispy.app.quit()
+        elif event.key == vispy.keys.ENTER:
+            vispy.app.quit()
+
+    canvas.events.key_press.connect(process_key)
+
+    view = canvas.central_widget.add_view()
+    vispy_view = VispyView(view, None)
+    vispy_view.point_cloud = point_cloud
+    vispy_view.annotation = annotation
+    vispy_view.prediction = prediction
+
+    help_text = (
+        "red: captured data \n"
+        "green: prediction from the model \n"
+        "blue: annotation \n"
+        "white: overlap of all three above"
+    )
+    help_label = Label(
+        help_text, color="white", anchor_x="left", anchor_y="bottom",
+    )
+    canvas.central_widget.add_widget(help_label)
+
+    canvas.show(visible=True)
+
+    vispy.app.run()
+
+    return do_break
+
+
 if __name__ == '__main__':
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser(
+        "Predictor",
+        usage="python3 predict.py -m models/2022_09_20__08_13_58_478586000 "
+              "-d data/dataset1",
+        description="This script allows visualizing a prediction without a UI."
+        "The script will iterate over each sample in the dataset(s) "
+        "and visualize it one by one.",
+    )
+    parser.add_argument(
+        "-m", "--model", required=True,
+        help="Select the model which should be used. Path should be relative "
+             "to main project directory.")
+    parser.add_argument(
+        "-d", "--dataset", nargs="+", required=True,
+        help="Select one or multiple datasets to predict. "
+             "Paths should be relative to main project directory.",
+    )
+    parser.add_argument(
+        "-c", "--confidence", required=False, default=0.5, type=float,
+        help="Choose which confidence threshold to use. default value is 0.5"
+    )
+    args = parser.parse_args()
+    project_dir = Path(__file__).absolute().parent
+
     # TODO: include help
-    predictor = Predictor(Path("models/2022_07_26__10_13_30_365682000"))
-    prediction = predictor.predict(np.zeros((13, 3), dtype=np.uint8))
-    print(prediction)
-    # TODO: visualize predictions nicely
+    predictor = Predictor(project_dir / args.model,
+                          confidence_threshold=args.confidence)
+    datasets = [
+        Dataset(project_dir / dataset_name, broaden_annotations=True)
+        for dataset_name in args.dataset
+    ]
+    dataset = DatasetMerged(datasets)
+
+    for (point_cloud, features, annotation) in dataset:
+        prediction = predictor.predict(point_cloud)
+        do_break = visualize(point_cloud, annotation, prediction)
+        if do_break:
+            break

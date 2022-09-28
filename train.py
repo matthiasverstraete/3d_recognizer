@@ -116,13 +116,30 @@ def train_async(dataset_names: List[Path]) -> ProgressTracker:
 
 
 if __name__ == '__main__':
-    # TODO: include help
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser(
+        "Trainer",
+        description="Use this script to train a model without the UI. This "
+                    "script also allows training on multiple datasets by "
+                    "combining them in one large dataset.",
+        usage="python3 train.py -d data/dataset1 data/dataset2"
+    )
+    parser.add_argument(
+        "-d", "--dataset", nargs="+",
+        help="Select one or multiple datasets to train on. "
+        "Paths should be relative to main project directory",
+        required=True
+    )
+    args = parser.parse_args()
+    project_dir = Path(__file__).absolute().parent
+
     # TODO: remove all references to local folders or my name
     from time import sleep, time
     start = time()
-    tracker = train_async([
-        Path("data/matthias_home2"),
-    ])
+    datasets = [project_dir / Path(path) for path in args.dataset]
+    tracker = train_async(datasets)
+
     while True:
         progress = tracker.check_progress()
         print(progress)

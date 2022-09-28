@@ -113,13 +113,13 @@ class RealsenseCamera(Camera):
         points = np.asanyarray(points_data.get_vertices())\
             .view(np.float32).reshape(-1, 3)
 
-        if not self._validate_point_cloud(points):
+        # filter z
+        filter = np.bitwise_and(points[:, 2] < 0.6, 0.05 < points[:, 2])
+        points1 = points[filter]
+
+        if not self._validate_point_cloud(points1):
             raise Exception("No valid frame received.")
 
-        # filter z
-        points1 = points[points[:, 2] < 0.6]
-        points2 = points1[0.001 < points1[:, 2]]
+        self._last_cloud = points1
 
-        self._last_cloud = points2
-
-        return points2
+        return points1
