@@ -18,7 +18,14 @@ class VispyMarkers(vispy.scene.Markers):
         if pos is None:
             pos_non_optional: np.ndarray = np.array([[0., 0., 0.]])
         else:
-            pos_non_optional = pos[np.random.choice(len(pos), size=10000, replace=False), :]
+            if len(pos) == 0:
+                pos_non_optional = pos
+            else:
+                selection_size = min(10000, len(pos))
+                selection = np.random.choice(
+                    len(pos), size=selection_size, replace=False
+                )
+                pos_non_optional = pos[selection, :]
 
         super().set_data(
             pos=pos_non_optional, edge_width=0.0,
