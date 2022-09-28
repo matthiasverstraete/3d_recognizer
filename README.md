@@ -23,7 +23,7 @@ python3 main.py
 ```
 The tool will automatically search a connected Intel Realsense L515 camera. If no camera was found,
 It will pretend a camera was connected and instead show some pre-recorded point clouds. This
-mode is mainly for demonstration purposes.
+mode is mainly for demonstration purposes (mock data is located in `data/mock`).
 
 ![main UI screenshot](./screenshot.png "main screenshot")
 
@@ -52,11 +52,16 @@ In order to capture data, first a dataset name needs to be filled in. Each time 
 total number of samples in that dataset is shown below the 'Capture' button.
 After capture was taken, it is shown in the middle 3d view so it can be labelled.
 
+#### Training
 Once a sufficient amount of point clouds were captured and labelled, it is possible to press the
 'Train' button. This will train a new model based on the selected dataset. The progress bar will show
 the progress of this training process. Once a model was successfully trained, the name of that model (time of training)
 will be shown below the progress bar.
 
+Note that the tool comes pre-installed with an already trained model. Once a more recent model is trained, this will
+used for prediction.
+
+#### Prediction
 Finally, it is also possible to do predictions in this tool. Press the 'Predict' button in order to start
 predictions. As long as the 'Predict' button is toggled on, a new prediction will be made every 250 ms. The
 output is shown in the right-most 3D view. One can dynamically adjust the confidence with the slider above the 'Predict' button.
