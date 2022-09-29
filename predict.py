@@ -66,7 +66,8 @@ def visualize(
         "red: captured data \n"
         "green: prediction from the model \n"
         "blue: annotation \n"
-        "white: overlap of all three above"
+        "white: overlap of all three above \n"
+        "Press enter for next sample. Press escape to stop."
     )
     help_label = Label(
         help_text, color="white", anchor_x="left", anchor_y="bottom",
@@ -89,7 +90,8 @@ if __name__ == '__main__':
               "-d data/dataset1",
         description="This script allows visualizing a prediction without a UI."
         "The script will iterate over each sample in the dataset(s) "
-        "and visualize it one by one.",
+        "and visualize it one by one. Press 'enter' to go to the next sample. "
+        "Press 'escape' to stop predictions.",
     )
     parser.add_argument(
         "-m", "--model", required=True,
@@ -110,7 +112,8 @@ if __name__ == '__main__':
     predictor = Predictor(project_dir / args.model,
                           confidence_threshold=args.confidence)
     datasets = [
-        Dataset(project_dir / dataset_name, broaden_annotations=True)
+        Dataset(project_dir / dataset_name, only_annotated=False,
+                broaden_annotations=True)
         for dataset_name in args.dataset
     ]
     dataset = DatasetMerged(datasets)
