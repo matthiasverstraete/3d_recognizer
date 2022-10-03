@@ -115,7 +115,7 @@ class Main:
     def train(self) -> None:
         dataset_name = self.data_capturing_frame.dataset_name.get()
         progress_tracker = train_async([Path("data") / dataset_name])
-        self.data_capturing_frame.progress_tracker = progress_tracker
+        self.training_frame.progress_tracker = progress_tracker
 
     def toggle_prediction(self, enable: bool) -> None:
         if enable:
