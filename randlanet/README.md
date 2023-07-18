@@ -1,6 +1,6 @@
 # RandLA-Net Point Cloud Semantic Segmentation
 
-[RandLA-Net](https://arxiv.org/abs/1911.11236) is an efficient semantic segmentation network for large-scale point clouds. As input, it accepts 3D point clouds, possibly augmented with features such as colors, and returns a class index for each point in the point cloud.
+[RandLA-Net](https://arxiv.org/abs/1911.11236) is an efficient semantic segmentation network for large-scale point clouds. As input, it accepts 3D point clouds, possibly augmented with features such as colors, and returns a class index for each point in the point cloud. The implementation used here was based on: [https://github.com/aRI0U/RandLA-Net-pytorch](https://github.com/aRI0U/RandLA-Net-pytorch)
 
 ## Analysis
 
