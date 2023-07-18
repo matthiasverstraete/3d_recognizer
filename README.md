@@ -1,6 +1,8 @@
 # 3d_recognizer
 
 This repository contains a tool to train/test models on 3d point cloud segmentation. It is specifically focussed on recongnizing points on a point cloud eg fingertips.
+The segementation is done by RandLa-Net. The implementation was based on this repository: [https://github.com/aRI0U/RandLA-Net-pytorch](https://github.com/aRI0U/RandLA-Net-pytorch)
+
 
 ## Setup
 In order to run the tool, the following pre-requisites are required:
