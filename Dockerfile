@@ -1,4 +1,4 @@
-FROM nvidia/cuda:11.3.0-cudnn8-runtime-ubuntu20.04
+FROM nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Belgium
@@ -12,22 +12,22 @@ ENV TZ=Europe/Belgium
 #apt install nvidia-
 
 RUN apt update && apt install -y \
-  openssh-server=1:8.2p1-4ubuntu0.5 \
-  unzip=6.0-25ubuntu1 \
-  wget=1.20.3-1ubuntu2 \
-  python3=3.8.2-0ubuntu2 \
-  python3-dev=3.8.2-0ubuntu2 \
-  python3-tk=3.8.10-0ubuntu1~20.04 \
-  python3-pip=20.0.2-5ubuntu1.6 \
-  cmake=3.16.3-1ubuntu1 \
-  build-essential=12.8ubuntu1.1 \
-  git=1:2.25.1-1ubuntu3.5 \
-  libssl-dev=1.1.1f-1ubuntu2.16 \
-  libx11-dev=2:1.6.9-2ubuntu1.2 \
-  xorg-dev=1:7.7+19ubuntu14 \
-  libglu1-mesa-dev=9.0.1-1build1 \
-  libusb-1.0-0-dev=2:1.0.23-2build1 \
-  tk=8.6.9+1 && \
+  openssh-server \
+  unzip \
+  wget \
+  python3 \
+  python3-dev \
+  python3-tk \
+  python3-pip \
+  cmake \
+  build-essential \
+  git \
+  libssl-dev \
+  libx11-dev \
+  xorg-dev \
+  libglu1-mesa-dev \
+  libusb-1.0-0-dev \
+  tk && \
   apt clean
 
 
